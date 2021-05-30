@@ -9,8 +9,12 @@ import (
 func main() {
 	r := gin.Default()
 
+	// read static file in server app
+	r.Static("/images", "./images")
+
 	routes.UserRoute(r)
 	routes.UserDetailRoute(r)
+	routes.UserProfileRoute(r)
 	routes.TodoRoute(r)
 	routes.CategoryRoute(r)
 

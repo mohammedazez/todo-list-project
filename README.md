@@ -1,7 +1,7 @@
 # project todo list golang 
 
 ```
-https://todo-test-api-golang.herokuapp.com/
+https://todo-rest-api-golang.herokuapp.com/
 ```
 
 todo list app is an application to create and manage task, This app has : 
@@ -38,6 +38,10 @@ todo list app is an application to create and manage task, This app has :
 - `GET /user_details`
 - `POST /user_details`
 - `PUT /user_details`
+
+### userProfiles
+- `GET /user_profile`
+- `POST /user_profile`
 
 ## RESTful endpoints users
 ### GET /users
@@ -267,10 +271,39 @@ _Response (200)_
   }, 
   "data" :
       {
-        "id" : 1,
-        "first_name" : "afista",
-        "last_name" : "pratama",
-        "email" : "pratama@mail.com"
+        "id": 2,
+        "first_name": "admin",
+        "last_name": "user",
+        "email": "admin@mail.com",
+        "user_profile": {
+            "id": 1,
+            "profile_user": "https://todo-rest-api-golang.herokuapp.com/images/google.com.jpg",
+            "user_id": 2
+        },
+        "user_detail": {
+            "id": 1,
+            "no_handphone": 6283213231232,
+            "gender": "male",
+            "address": "lumajang",
+            "user_id": 2,
+            "created_at": "2021-05-06T15:21:02+07:00",
+            "updated_at": "2021-05-06T15:21:02+07:00"
+        }
+    }
+}
+```
+
+_Response (400 - Bad Request)_
+```json
+{
+  "meta" : {
+      "message" : "error bad request user ID",
+      "code" : 400,
+      "status" : "error"
+  }, 
+  "data" : 
+      {
+        "errors" : "user id <id? not found"
       }
 }
 ```
@@ -1279,3 +1312,129 @@ _Response (500 - Internal Server Error)_
 }
 ```
 ---
+
+## RESTful endpoints userProfile
+- `GET /user_profile` (done)
+- `POST /user_profile`
+
+### GET /user_profile
+> get user profile by user ID login 
+
+_Request Header_
+```json
+{
+   "Authorization": "<your Authorization>"
+}
+```
+
+_Request Body_
+```
+not needed
+```
+
+_Response (200)_
+```json
+{
+  "meta" : {
+      "message" : "success get user profile by user ID",
+      "code" : 200,
+      "status" : "success"
+  }, 
+  "data" : {
+        "id": 1,
+        "profile_user" : "https://todo-rest-api-golang.herokuapp.com/images/profile-7-google.com.jpg",
+        "user_id" : 2 
+    }
+}
+```
+
+_Response (401 - Unauthorized)_
+```json
+{
+    "meta" : {
+      "message" : "Unauthorize",
+      "code" : 401,
+      "status" : "error"
+  }, 
+  "data" : 
+      {
+        "error" : ""
+      }
+}
+```
+
+_Response (500 - Internal Server Error)_
+```json
+{
+  "meta" : {
+      "message" : "Internal server error",
+      "code" : 500,
+      "status" : "error"
+  }, 
+  "data" : {
+      "error" : ""
+  }
+}
+```
+---
+
+### POST /user_profile
+> update user profile by user id login
+
+_Request Header_
+```json
+{
+   "Authorization": "<your Authorization>"
+}
+```
+
+_Request Body_
+```
+file upload (google.com.jpg)
+```
+
+_Response (201)_
+```json
+{
+  "meta" : {
+      "message" : "success get user profile by user ID",
+      "code" : 201,
+      "status" : "success"
+  }, 
+  "data" : {
+        "id": 1,
+        "profile_user" : "https://todo-rest-api-golang.herokuapp.com/images/profile-7-google.com.jpg",
+        "user_id" : 2 
+    }
+}
+```
+
+_Response (400 - Bad Request)_
+```json
+{
+  "meta" : {
+      "message" : "input data required",
+      "code" : 400,
+      "status" : "bad request"
+  }, 
+  "data" : {
+      "error" : ""
+  }
+}
+```
+
+_Response (500 - Internal Server Error)_
+```json
+{
+  "meta" : {
+      "message" : "Internal server error",
+      "code" : 500,
+      "status" : "error"
+  }, 
+  "data" : {
+      "error" : ""
+  }
+}
+```
+---
+

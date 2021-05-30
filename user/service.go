@@ -6,6 +6,8 @@ import (
 	"time"
 	"todoAPIGolang/entity"
 	"todoAPIGolang/helper"
+	"todoAPIGolang/userDetail"
+	"todoAPIGolang/userProfile"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -13,18 +15,20 @@ import (
 type Service interface {
 	GetAllUser() ([]UserFormat, error)
 	SaveNewUser(user entity.UserInput) (UserFormat, error)
-	GetUserByID(userID string) (UserFormat, error)
+	GetUserByID(userID string) (UserDetailFormat, error)
 	DeleteUserByID(userID string) (interface{}, error)
 	UpdateUserByID(userID string, dataInput entity.UpdateUserInput) (UserFormat, error)
 	LoginUser(input entity.LoginUserInput) (entity.User, error)
 }
 
 type service struct {
-	repository Repository
+	repository            Repository
+	userDetailRepository  userDetail.Repository
+	userProfileRepository userProfile.Repository
 }
 
-func NewService(repo Repository) *service {
-	return &service{repo}
+func NewService(repo Repository, userDetailRepository userDetail.Repository, userProfileRepository userProfile.Repository) *service {
+	return &service{repo, userDetailRepository, userProfileRepository}
 }
 
 func (s *service) LoginUser(input entity.LoginUserInput) (entity.User, error) {
@@ -90,23 +94,37 @@ func (s *service) SaveNewUser(user entity.UserInput) (UserFormat, error) {
 	return formatUser, nil
 }
 
-func (s *service) GetUserByID(userID string) (UserFormat, error) {
+func (s *service) GetUserByID(userID string) (UserDetailFormat, error) {
 	if err := helper.ValidateIDNumber(userID); err != nil {
-		return UserFormat{}, err
+		return UserDetailFormat{}, err
 	}
 
 	user, err := s.repository.FindByID(userID)
+	userDetail, err := s.userDetailRepository.FindByUserID(userID)
+	userProfile, err := s.userProfileRepository.FindByUserID(userID)
 
 	if err != nil {
-		return UserFormat{}, err
+		return UserDetailFormat{}, err
+	}
+
+	var userData = entity.UserDetailOutput{
+		ID:          user.ID,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Email:       user.Email,
+		Password:    user.Password,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   user.UpdatedAt,
+		UserDetail:  userDetail,
+		UserProfile: userProfile,
 	}
 
 	if user.ID == 0 {
 		newError := fmt.Sprintf("user id %s not found", userID)
-		return UserFormat{}, errors.New(newError)
+		return UserDetailFormat{}, errors.New(newError)
 	}
 
-	formatUser := FormatUser(user)
+	formatUser := FormatDetailUser(userData)
 
 	return formatUser, nil
 }
